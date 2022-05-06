@@ -275,8 +275,8 @@ export default [
     code: "ControlLeft",
   },
   {
-    small: "⌘",
-    capital: "⌘",
+    small: "win",
+    capital: "win",
     code: "MetaLeft",
   },
   {
