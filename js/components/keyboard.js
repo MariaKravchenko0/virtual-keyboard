@@ -80,8 +80,9 @@ export function createKeyboard() {
   let keyboard = document.createElement("div");
   keyboard.classList.add("keyboard");
 
-  rows.forEach((row) => {
+  rows.forEach((row, index) => {
     let newRow = createRow(row);
+    newRow.classList.add(`keyboard__row_${index + 1}`);
     keyboard.append(newRow);
   });
 
