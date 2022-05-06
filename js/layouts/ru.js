@@ -285,11 +285,6 @@ export default [
     code: "AltLeft",
   },
   {
-    small: "⌘",
-    capital: "⌘",
-    code: "MetaLeft",
-  },
-  {
     small: "",
     capital: "",
     code: "Space",
