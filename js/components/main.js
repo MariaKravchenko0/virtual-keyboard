@@ -1,10 +1,10 @@
-export function createTitle(parent) {
+export function createTitle() {
   let title = document.createElement("h1");
   title.textContent = "Virtual Keyboard";
-  parent.append(title);
+  return title;
 }
 
-export function createTextarea(parent) {
+export function createTextarea() {
   let textarea = document.createElement("textarea");
   textarea.classList.add("textarea");
   textarea.setAttribute("autofocus", "");
@@ -12,14 +12,13 @@ export function createTextarea(parent) {
   textarea.setAttribute("id", "textarea");
   textarea.setAttribute("cols", "30");
   textarea.setAttribute("rows", "10");
-  parent.append(textarea);
+  return textarea;
 }
 
-export function createComment(parent) {
-  let comment1 = document.createElement("p");
-  comment1.innerHTML = "Keyboard created in Windows OS";
-  let comment2 = document.createElement("p");
-  comment2.innerHTML = "Use <b>ctrl</b> + <b>alt</b> to change language";
-  parent.append(comment1);
-  parent.append(comment2);
+export function createComment() {
+  let comment = document.createElement("p");
+  comment.innerHTML =
+    "Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language";
+
+  return comment;
 }
