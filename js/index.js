@@ -1,6 +1,8 @@
-import Keyboard, { rows } from "./components/keyboard.js";
+/* eslint-disable import/extensions */
 
-new Keyboard(rows).init("en").generateLayout();
+import Keyboard, { rows } from './components/keyboard.js';
+
+new Keyboard(rows).init('en').generateLayout();
 
 // import * as main from "./components/main.js";
 // import { createKeyboard } from "./components/keyboard.js";

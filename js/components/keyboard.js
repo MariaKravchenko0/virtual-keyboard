@@ -1,111 +1,112 @@
-import language from "../layouts/lang.js";
-import Key from "./key.js";
+/* eslint-disable import/extensions */
+
+import language from '../layouts/lang.js';
+import Key from './key.js';
 
 export const rows = [
   [
-    "Backquote",
-    "Digit1",
-    "Digit2",
-    "Digit3",
-    "Digit4",
-    "Digit5",
-    "Digit6",
-    "Digit7",
-    "Digit8",
-    "Digit9",
-    "Digit0",
-    "Minus",
-    "Equal",
-    "Backspace",
+    'Backquote',
+    'Digit1',
+    'Digit2',
+    'Digit3',
+    'Digit4',
+    'Digit5',
+    'Digit6',
+    'Digit7',
+    'Digit8',
+    'Digit9',
+    'Digit0',
+    'Minus',
+    'Equal',
+    'Backspace',
   ],
   [
-    "Tab",
-    "KeyQ",
-    "KeyW",
-    "KeyE",
-    "KeyR",
-    "KeyT",
-    "KeyY",
-    "KeyU",
-    "KeyI",
-    "KeyO",
-    "KeyP",
-    "BracketLeft",
-    "BracketRight",
-    "Backslash",
+    'Tab',
+    'KeyQ',
+    'KeyW',
+    'KeyE',
+    'KeyR',
+    'KeyT',
+    'KeyY',
+    'KeyU',
+    'KeyI',
+    'KeyO',
+    'KeyP',
+    'BracketLeft',
+    'BracketRight',
+    'Backslash',
   ],
   [
-    "CapsLock",
-    "KeyA",
-    "KeyS",
-    "KeyD",
-    "KeyF",
-    "KeyG",
-    "KeyH",
-    "KeyJ",
-    "KeyK",
-    "KeyL",
-    "Semicolon",
-    "Quote",
-    "Enter",
+    'CapsLock',
+    'KeyA',
+    'KeyS',
+    'KeyD',
+    'KeyF',
+    'KeyG',
+    'KeyH',
+    'KeyJ',
+    'KeyK',
+    'KeyL',
+    'Semicolon',
+    'Quote',
+    'Enter',
   ],
   [
-    "ShiftLeft",
-    "KeyZ",
-    "KeyX",
-    "KeyC",
-    "KeyV",
-    "KeyB",
-    "KeyN",
-    "KeyM",
-    "Comma",
-    "Period",
-    "Slash",
-    "ArrowUp",
-    "ShiftRight",
+    'ShiftLeft',
+    'KeyZ',
+    'KeyX',
+    'KeyC',
+    'KeyV',
+    'KeyB',
+    'KeyN',
+    'KeyM',
+    'Comma',
+    'Period',
+    'Slash',
+    'ArrowUp',
+    'ShiftRight',
   ],
   [
-    "ControlLeft",
-    "MetaLeft",
-    "AltLeft",
-    "Space",
-    "AltRight",
-    "ArrowLeft",
-    "ArrowDown",
-    "ArrowRight",
-    "ControlRight",
+    'ControlLeft',
+    'MetaLeft',
+    'AltLeft',
+    'Space',
+    'AltRight',
+    'ArrowLeft',
+    'ArrowDown',
+    'ArrowRight',
+    'ControlRight',
   ],
 ];
 
 export default class Keyboard {
-  constructor(rows) {
-    this.rows = rows;
+  constructor(keyRows) {
+    this.rows = keyRows;
   }
 
   init(lang) {
     this.layout = language[lang];
 
-    this.title = document.createElement("h1");
-    this.title.textContent = "Virtual Keyboard";
+    this.title = document.createElement('h1');
+    this.title.textContent = 'Virtual Keyboard';
     document.body.append(this.title);
 
-    this.textarea = document.createElement("textarea");
-    this.textarea.classList.add("textarea");
-    this.textarea.setAttribute("autofocus", "");
-    this.textarea.setAttribute("name", "textarea");
-    this.textarea.setAttribute("id", "textarea");
-    this.textarea.setAttribute("cols", "30");
-    this.textarea.setAttribute("rows", "10");
+    this.textarea = document.createElement('textarea');
+    this.textarea.classList.add('textarea');
+    this.textarea.setAttribute('autofocus', '');
+    this.textarea.setAttribute('name', 'textarea');
+    this.textarea.setAttribute('id', 'textarea');
+    this.textarea.setAttribute('cols', '30');
+    this.textarea.setAttribute('rows', '10');
     document.body.append(this.textarea);
 
-    this.keyboard = document.createElement("div");
-    this.keyboard.classList.add("keyboard");
+    this.keyboard = document.createElement('div');
+    this.keyboard.classList.add('keyboard');
     this.keyboard.dataset.language = lang;
     document.body.append(this.keyboard);
 
-    this.comment = document.createElement("p");
-    this.comment.innerHTML =
-      "Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language";
+    this.comment = document.createElement('p');
+    this.comment.innerHTML = 'Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language';
     document.body.append(this.comment);
 
     return this;
@@ -113,14 +114,14 @@ export default class Keyboard {
 
   generateLayout() {
     this.rows.forEach((row, index) => {
-      let newRow = document.createElement("div");
-      newRow.classList.add("keyboard__row");
+      const newRow = document.createElement('div');
+      newRow.classList.add('keyboard__row');
       newRow.classList.add(`keyboard__row_${index + 1}`);
       this.keyboard.append(newRow);
 
       row.forEach((code) => {
-        let keyObj = this.layout.find((key) => key.code === code);
-        let key = new Key(keyObj);
+        const keyObj = this.layout.find((key) => key.code === code);
+        const key = new Key(keyObj);
         newRow.append(key.key);
       });
     });
