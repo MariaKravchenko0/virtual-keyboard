@@ -1,6 +1,7 @@
 import language from "../layouts/lang.js";
+import Key from "./key.js";
 
-const rows = [
+export const rows = [
   [
     "Backquote",
     "Digit1",
@@ -76,36 +77,88 @@ const rows = [
   ],
 ];
 
-export function createKeyboard() {
-  let keyboard = document.createElement("div");
-  keyboard.classList.add("keyboard");
+export default class Keyboard {
+  constructor(rows) {
+    this.rows = rows;
+  }
 
-  rows.forEach((row, index) => {
-    let newRow = createRow(row);
-    newRow.classList.add(`keyboard__row_${index + 1}`);
-    keyboard.append(newRow);
-  });
+  init(lang) {
+    this.layout = language[lang];
 
-  return keyboard;
+    this.title = document.createElement("h1");
+    this.title.textContent = "Virtual Keyboard";
+    document.body.append(this.title);
+
+    this.textarea = document.createElement("textarea");
+    this.textarea.classList.add("textarea");
+    this.textarea.setAttribute("autofocus", "");
+    this.textarea.setAttribute("name", "textarea");
+    this.textarea.setAttribute("id", "textarea");
+    this.textarea.setAttribute("cols", "30");
+    this.textarea.setAttribute("rows", "10");
+    document.body.append(this.textarea);
+
+    this.keyboard = document.createElement("div");
+    this.keyboard.classList.add("keyboard");
+    this.keyboard.dataset.language = lang;
+    document.body.append(this.keyboard);
+
+    this.comment = document.createElement("p");
+    this.comment.innerHTML =
+      "Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language";
+    document.body.append(this.comment);
+
+    return this;
+  }
+
+  generateLayout() {
+    this.rows.forEach((row, index) => {
+      let newRow = document.createElement("div");
+      newRow.classList.add("keyboard__row");
+      newRow.classList.add(`keyboard__row_${index + 1}`);
+      this.keyboard.append(newRow);
+
+      row.forEach((code) => {
+        let keyObj = this.layout.find((key) => key.code === code);
+        let key = new Key(keyObj);
+        newRow.append(key.key);
+      });
+    });
+
+    return this;
+  }
 }
 
-function createRow(row) {
-  let newRow = document.createElement("div");
-  newRow.classList.add("keyboard__row");
+// export function createKeyboard() {
+//   let keyboard = document.createElement("div");
+//   keyboard.classList.add("keyboard");
 
-  row.forEach((code) => {
-    let keyObj = language.en.find((key) => key.code === code);
-    let keyEl = createKey(keyObj);
-    newRow.append(keyEl);
-  });
+//   rows.forEach((row, index) => {
+//     let newRow = createRow(row);
+//     newRow.classList.add(`keyboard__row_${index + 1}`);
+//     keyboard.append(newRow);
+//   });
 
-  return newRow;
-}
+//   return keyboard;
+// }
 
-function createKey(keyObj) {
-  let key = document.createElement("div");
-  key.classList.add("keyboard__key");
-  key.textContent = keyObj.small;
+// function createRow(row) {
+//   let newRow = document.createElement("div");
+//   newRow.classList.add("keyboard__row");
 
-  return key;
-}
+//   row.forEach((code) => {
+//     let keyObj = language.en.find((key) => key.code === code);
+//     let keyEl = createKey(keyObj);
+//     newRow.append(keyEl);
+//   });
+
+//   return newRow;
+// }
+
+// function createKey(keyObj) {
+//   let key = document.createElement("div");
+//   key.classList.add("keyboard__key");
+//   key.textContent = keyObj.small;
+
+//   return key;
+// }

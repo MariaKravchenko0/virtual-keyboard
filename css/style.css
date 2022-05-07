@@ -44,14 +44,15 @@ h1 {
   padding: 10px;
   font-size: 2em;
   color: var(--color-text);
+  background-color: var(--color-key-light);
   border: 2px solid var(--color-key-dark);
-  box-shadow: 5px 5px 15px -8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 5px 13px 1px rgba(0, 0, 0, 0.25);
   border-radius: 7px;
 }
 
 .textarea:focus {
   outline: none;
-  box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 5px 15px 3px rgba(0, 0, 0, 0.25);
 }
 
 textarea::-webkit-scrollbar {
@@ -59,22 +60,21 @@ textarea::-webkit-scrollbar {
 }
 
 textarea::-webkit-scrollbar-thumb {
-  background-color: var(--color-key-dark);
+  background-color: var(--color-hover);
   border-radius: 7px;
 }
 
 .keyboard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
   width: 875px;
   height: 275px;
   padding: 10px;
   background: linear-gradient(180deg, #e2f0ec 0%, #ccd6d3 76.51%);
   border-radius: 7px;
   border: 2px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 5px 5px 15px -3px rgba(0, 0, 0, 0.25);
+  /* box-shadow: 5px 5px 15px -3px rgba(0, 0, 0, 0.25); */
+  box-shadow: 0 5px 13px 5px rgba(0, 0, 0, 0.25);
   margin: 0.67em 0;
 }
 
@@ -113,7 +113,7 @@ textarea::-webkit-scrollbar-thumb {
   cursor: pointer;
   user-select: none;
   background-color: var(--color-key-dark);
-  border: 2.4px solid rgba(255, 255, 255, 0.25);
+  border: 2.5px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 5px 13px 5px rgba(0, 0, 0, 0.25);
   transition: 0.3s;
 }
@@ -126,6 +126,10 @@ textarea::-webkit-scrollbar-thumb {
   background-color: var(--color-key-light);
 }
 
+.hidden {
+  display: none;
+}
+
 p {
   align-self: flex-end;
   font-size: 1.5em;
@@ -134,4 +138,5 @@ p {
 
 b {
   letter-spacing: 0.06em;
+  color: var(--color-active);
 }
