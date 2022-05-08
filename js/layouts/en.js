@@ -140,6 +140,11 @@ export default [
     code: 'Backslash',
   },
   {
+    small: 'del',
+    capital: 'del',
+    code: 'Delete',
+  },
+  {
     small: 'capslock',
     capital: 'capslock',
     code: 'CapsLock',

@@ -5,8 +5,8 @@ export default class Key {
     this.code = code;
     this.isFunctional = Boolean(
       code.match(
-        /ControlLeft|ControlRight|AltLeft|AltRight|MetaLeft|Enter|Backspace|Tab|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|CapsLock|Shift/,
-      ),
+        /ControlLeft|ControlRight|AltLeft|AltRight|MetaLeft|Enter|Backspace|Delete|Tab|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|CapsLock|Shift/
+      )
     );
 
     this.smallKey = document.createElement('div');
