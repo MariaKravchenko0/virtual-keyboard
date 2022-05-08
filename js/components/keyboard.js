@@ -35,6 +35,7 @@ export const rows = [
     'BracketLeft',
     'BracketRight',
     'Backslash',
+    'Delete',
   ],
   [
     'CapsLock',
@@ -106,13 +107,15 @@ export default class Keyboard {
     document.body.append(this.keyboard);
 
     this.comment = document.createElement('p');
-    this.comment.innerHTML = 'Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language';
+    this.comment.innerHTML =
+      'Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language';
     document.body.append(this.comment);
 
     return this;
   }
 
   generateLayout() {
+    this.keysArray = [];
     this.rows.forEach((row, index) => {
       const newRow = document.createElement('div');
       newRow.classList.add('keyboard__row');
@@ -122,12 +125,43 @@ export default class Keyboard {
       row.forEach((code) => {
         const keyObj = this.layout.find((key) => key.code === code);
         const key = new Key(keyObj);
+        this.keysArray.push(key);
         newRow.append(key.key);
       });
     });
 
-    return this;
+    document.addEventListener('keydown', this.handleEvent);
+    document.addEventListener('keyup', this.handleEvent);
+    this.keyboard.addEventListener('mousedown', this.handleEvent);
+    // this.keyboard.addEventListener('mouseup', this.handleEvent);
   }
+
+  handleEvent = (event) => {
+    console.log(event.type);
+    event.stopPropagation();
+    event.preventDefault();
+    let keyBtn;
+    let keyObj;
+
+    if (event.type === 'mousedown') {
+      keyBtn = event.target.closest('.keyboard__key');
+      if (!keyBtn) return;
+
+      const code = keyBtn.dataset.code;
+      keyObj = this.keysArray.find((key) => key.code === code);
+      document.body.addEventListener('mouseup', () => {
+        keyObj.key.classList.remove('active');
+      });
+    } else {
+      keyObj = this.keysArray.find((key) => key.code === event.code);
+      if (!keyObj) return;
+    }
+    this.textarea.focus();
+
+    event.type === 'keydown' || event.type === 'mousedown'
+      ? keyObj.key.classList.add('active')
+      : keyObj.key.classList.remove('active');
+  };
 }
 
 // export function createKeyboard() {
