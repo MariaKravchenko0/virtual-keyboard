@@ -21,6 +21,9 @@ export default class Key {
     this.key = document.createElement('div');
     this.key.classList.add('keyboard__key');
     if (this.isFunctional) this.key.classList.add('keyboard__key_functional');
+    this.isFunctional
+      ? (this.key.dataset.functional = 'true')
+      : (this.key.dataset.functional = 'false');
     this.key.dataset.code = this.code;
 
     this.key.append(this.smallKey);

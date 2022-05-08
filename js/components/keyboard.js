@@ -1,6 +1,7 @@
 /* eslint-disable import/extensions */
 
 import language from '../layouts/lang.js';
+import * as storage from './storage.js';
 import Key from './key.js';
 
 export const rows = [
@@ -115,7 +116,7 @@ export default class Keyboard {
   }
 
   generateLayout() {
-    this.keysArray = [];
+    this.generatedKeysArray = [];
     this.rows.forEach((row, index) => {
       const newRow = document.createElement('div');
       newRow.classList.add('keyboard__row');
@@ -123,9 +124,9 @@ export default class Keyboard {
       this.keyboard.append(newRow);
 
       row.forEach((code) => {
-        const keyObj = this.layout.find((key) => key.code === code);
-        const key = new Key(keyObj);
-        this.keysArray.push(key);
+        const keyObject = this.layout.find((key) => key.code === code);
+        const key = new Key(keyObject);
+        this.generatedKeysArray.push(key);
         newRow.append(key.key);
       });
     });
@@ -133,34 +134,109 @@ export default class Keyboard {
     document.addEventListener('keydown', this.handleEvent);
     document.addEventListener('keyup', this.handleEvent);
     this.keyboard.addEventListener('mousedown', this.handleEvent);
-    // this.keyboard.addEventListener('mouseup', this.handleEvent);
   }
 
   handleEvent = (event) => {
-    console.log(event.type);
     event.stopPropagation();
     event.preventDefault();
-    let keyBtn;
-    let keyObj;
+
+    let keyObject;
 
     if (event.type === 'mousedown') {
-      keyBtn = event.target.closest('.keyboard__key');
+      let keyBtn = event.target.closest('.keyboard__key');
       if (!keyBtn) return;
 
       const code = keyBtn.dataset.code;
-      keyObj = this.keysArray.find((key) => key.code === code);
-      document.body.addEventListener('mouseup', () => {
-        keyObj.key.classList.remove('active');
+      keyObject = this.generatedKeysArray.find((key) => key.code === code);
+      window.addEventListener('mouseup', () => {
+        keyObject.key.classList.remove('active');
       });
     } else {
-      keyObj = this.keysArray.find((key) => key.code === event.code);
-      if (!keyObj) return;
+      keyObject = this.generatedKeysArray.find(
+        (key) => key.code === event.code
+      );
+      if (!keyObject) return;
     }
     this.textarea.focus();
 
-    event.type === 'keydown' || event.type === 'mousedown'
-      ? keyObj.key.classList.add('active')
-      : keyObj.key.classList.remove('active');
+    if (event.type === 'keydown' || event.type === 'mousedown') {
+      keyObject.key.classList.add('active');
+
+      this.printToTextarea(keyObject);
+
+      if (
+        keyObject.key.dataset.code === 'ControlLeft' ||
+        keyObject.key.dataset.code === 'ControlRight'
+      )
+        this.ctrlKey = true;
+      if (
+        keyObject.key.dataset.code === 'AltLeft' ||
+        keyObject.key.dataset.code === 'AltRight'
+      )
+        this.altKey = true;
+
+      if (
+        (keyObject.key.dataset.code === 'ControlLeft' ||
+          keyObject.key.dataset.code === 'ControlRight') &&
+        this.altKey === true
+      )
+        this.switchLanguage();
+      if (
+        (keyObject.key.dataset.code === 'AltLeft' ||
+          keyObject.key.dataset.code === 'AltRight') &&
+        this.ctrlKey === true
+      )
+        this.switchLanguage();
+    } else if (event.type === 'keyup' || event.type === 'mouseup') {
+      keyObject.key.classList.remove('active');
+
+      if (
+        keyObject.key.dataset.code === 'ControlLeft' ||
+        keyObject.key.dataset.code === 'ControlRight'
+      )
+        this.ctrlKey = false;
+      if (
+        keyObject.key.dataset.code === 'AltLeft' ||
+        keyObject.key.dataset.code === 'AltRight'
+      )
+        this.altKey = false;
+    }
+  };
+
+  printToTextarea = (keyObj) => {
+    if (keyObj.key.dataset.functional !== 'true') {
+      this.textarea.value += keyObj.smallKey.textContent;
+    } else if (keyObj.key.dataset.code === 'Enter') {
+      this.textarea.value += '\n';
+    } else if (keyObj.key.dataset.code === 'Tab') {
+      this.textarea.value += '\t';
+    }
+  };
+
+  switchLanguage = () => {
+    let languages = Object.keys(language);
+    let currentLanguage = this.keyboard.dataset.language;
+
+    let currentLanguageIndex = languages.indexOf(currentLanguage);
+    let nextLanguageIndex =
+      currentLanguageIndex + 1 < languages.length
+        ? currentLanguageIndex + 1
+        : 0;
+
+    currentLanguage = languages[nextLanguageIndex];
+    this.layout = language[currentLanguage];
+    this.keyboard.dataset.language = currentLanguage;
+
+    this.generatedKeysArray.forEach((element) => {
+      const keyObject = this.layout.find((key) => key.code === element.code);
+
+      element.small = keyObject.small;
+      element.capital = keyObject.capital;
+      element.smallKey.textContent = keyObject.small;
+      element.capitalKey.textContent = keyObject.capital;
+    });
+
+    storage.setStorage('language', currentLanguage);
   };
 }
 
