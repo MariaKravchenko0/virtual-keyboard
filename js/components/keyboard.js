@@ -84,6 +84,9 @@ export const rows = [
 export default class Keyboard {
   constructor(keyRows) {
     this.rows = keyRows;
+    this.generatedKeysArray = [];
+    this.isShifted = false;
+    this.isCaps = false;
   }
 
   init(lang) {
@@ -116,7 +119,6 @@ export default class Keyboard {
   }
 
   generateLayout() {
-    this.generatedKeysArray = [];
     this.rows.forEach((row, index) => {
       const newRow = document.createElement('div');
       newRow.classList.add('keyboard__row');
@@ -134,6 +136,7 @@ export default class Keyboard {
     document.addEventListener('keydown', this.handleEvent);
     document.addEventListener('keyup', this.handleEvent);
     this.keyboard.addEventListener('mousedown', this.handleEvent);
+    this.keyboard.addEventListener('mouseup', this.handleEvent);
   }
 
   handleEvent = (event) => {
@@ -142,14 +145,16 @@ export default class Keyboard {
 
     let keyObject;
 
-    if (event.type === 'mousedown') {
+    if (event.type === 'mousedown' || event.type === 'mouseup') {
       let keyBtn = event.target.closest('.keyboard__key');
       if (!keyBtn) return;
 
       const code = keyBtn.dataset.code;
       keyObject = this.generatedKeysArray.find((key) => key.code === code);
-      window.addEventListener('mouseup', () => {
-        keyObject.key.classList.remove('active');
+
+      window.addEventListener('mousemove', () => {
+        if (keyObject.key.dataset.code !== 'CapsLock')
+          keyObject.key.classList.remove('active');
       });
     } else {
       keyObject = this.generatedKeysArray.find(
@@ -162,50 +167,122 @@ export default class Keyboard {
     if (event.type === 'keydown' || event.type === 'mousedown') {
       keyObject.key.classList.add('active');
 
+      if (
+        keyObject.key.dataset.code === 'ShiftLeft' ||
+        keyObject.key.dataset.code === 'ShiftRight'
+      ) {
+        if (!this.shiftKey || this.shiftKey === false) {
+          this.shiftKey = true;
+          this.switchCase(keyObject.key.dataset.code);
+        } else {
+          this.shiftKey = false;
+
+          this.switchCase(keyObject.key.dataset.code);
+
+          let shiftLeft = this.generatedKeysArray.find(
+            (key) => key.key.dataset.code === 'ShiftLeft'
+          );
+          let shiftRight = this.generatedKeysArray.find(
+            (key) => key.key.dataset.code === 'ShiftRight'
+          );
+          shiftLeft.key.classList.remove('active');
+          shiftRight.key.classList.remove('active');
+        }
+      }
+
+      if (keyObject.key.dataset.code === 'CapsLock') {
+        this.switchCase(keyObject.key.dataset.code);
+      }
+
       this.printToTextarea(keyObject);
 
-      if (
-        keyObject.key.dataset.code === 'ControlLeft' ||
-        keyObject.key.dataset.code === 'ControlRight'
-      )
+      if (event.code === 'ControlLeft' || event.code === 'ControlRight')
         this.ctrlKey = true;
-      if (
-        keyObject.key.dataset.code === 'AltLeft' ||
-        keyObject.key.dataset.code === 'AltRight'
-      )
+      if (event.code === 'AltLeft' || event.code === 'AltRight')
         this.altKey = true;
 
       if (
-        (keyObject.key.dataset.code === 'ControlLeft' ||
-          keyObject.key.dataset.code === 'ControlRight') &&
+        (event.code === 'ControlLeft' || event.code === 'ControlRight') &&
         this.altKey === true
       )
         this.switchLanguage();
       if (
-        (keyObject.key.dataset.code === 'AltLeft' ||
-          keyObject.key.dataset.code === 'AltRight') &&
+        (event.code === 'AltLeft' || event.code === 'AltRight') &&
         this.ctrlKey === true
       )
         this.switchLanguage();
     } else if (event.type === 'keyup' || event.type === 'mouseup') {
-      keyObject.key.classList.remove('active');
+      if (keyObject.key.dataset.code !== 'CapsLock')
+        keyObject.key.classList.remove('active');
 
       if (
-        keyObject.key.dataset.code === 'ControlLeft' ||
-        keyObject.key.dataset.code === 'ControlRight'
-      )
+        keyObject.key.dataset.code === 'ShiftLeft' ||
+        keyObject.key.dataset.code === 'ShiftRight'
+      ) {
+        this.shiftKey = false;
+        this.switchCase(keyObject.key.dataset.code);
+        keyObject.key.classList.remove('active');
+      }
+
+      if (event.code === 'ControlLeft' || event.code === 'ControlRight')
         this.ctrlKey = false;
-      if (
-        keyObject.key.dataset.code === 'AltLeft' ||
-        keyObject.key.dataset.code === 'AltRight'
-      )
+      if (event.code === 'AltLeft' || event.code === 'AltRight')
         this.altKey = false;
+    }
+  };
+
+  switchCase = (keyCode) => {
+    if (keyCode === 'ShiftLeft' || keyCode === 'ShiftRight') {
+      this.generatedKeysArray.forEach((key) => {
+        key.smallKey.classList.toggle('hidden');
+        key.capitalKey.classList.toggle('hidden');
+      });
+
+      this.isShifted === false
+        ? (this.isShifted = true)
+        : (this.isShifted = false);
+    } else if (keyCode === 'CapsLock') {
+      if (this.isCaps === false) {
+        this.generatedKeysArray.forEach((key) => {
+          if (key.key.dataset.letter === 'true') {
+            key.smallKey.classList.toggle('hidden');
+            key.capitalKey.classList.toggle('hidden');
+          } else if (key.key.dataset.code === 'CapsLock') {
+            key.key.classList.add('active');
+          }
+        });
+
+        this.isCaps = true;
+      } else {
+        this.generatedKeysArray.forEach((key) => {
+          if (key.key.dataset.letter === 'true') {
+            key.smallKey.classList.toggle('hidden');
+            key.capitalKey.classList.toggle('hidden');
+          } else if (key.key.dataset.code === 'CapsLock') {
+            key.key.classList.remove('active');
+          }
+        });
+
+        this.isCaps = false;
+      }
     }
   };
 
   printToTextarea = (keyObj) => {
     if (keyObj.key.dataset.functional !== 'true') {
-      this.textarea.value += keyObj.smallKey.textContent;
+      if (this.isShifted === false && this.isCaps === false) {
+        this.textarea.value += keyObj.smallKey.textContent;
+      } else if (this.isShifted === true && this.isCaps === false) {
+        this.textarea.value += keyObj.capitalKey.textContent;
+      } else if (this.isShifted === false && this.isCaps === true) {
+        keyObj.key.dataset.letter === 'true'
+          ? (this.textarea.value += keyObj.capitalKey.textContent)
+          : (this.textarea.value += keyObj.smallKey.textContent);
+      } else if (this.isShifted === true && this.isCaps === true) {
+        keyObj.key.dataset.letter === 'true'
+          ? (this.textarea.value += keyObj.smallKey.textContent)
+          : (this.textarea.value += keyObj.capitalKey.textContent);
+      }
     } else if (keyObj.key.dataset.code === 'Enter') {
       this.textarea.value += '\n';
     } else if (keyObj.key.dataset.code === 'Tab') {

@@ -8,6 +8,7 @@ export default class Key {
         /ControlLeft|ControlRight|AltLeft|AltRight|MetaLeft|Enter|Backspace|Delete|Tab|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|CapsLock|Shift/
       )
     );
+    this.isLetter = Boolean(small.match(/[a-zа-яёЁ]/));
 
     this.smallKey = document.createElement('div');
     this.smallKey.classList.add('smallKey');
@@ -21,9 +22,15 @@ export default class Key {
     this.key = document.createElement('div');
     this.key.classList.add('keyboard__key');
     if (this.isFunctional) this.key.classList.add('keyboard__key_functional');
-    this.isFunctional
-      ? (this.key.dataset.functional = 'true')
-      : (this.key.dataset.functional = 'false');
+    if (this.isFunctional) {
+      this.key.dataset.functional = 'true';
+    } else {
+      this.key.dataset.functional = 'false';
+      this.isLetter
+        ? (this.key.dataset.letter = 'true')
+        : (this.key.dataset.letter = 'false');
+    }
+
     this.key.dataset.code = this.code;
 
     this.key.append(this.smallKey);
