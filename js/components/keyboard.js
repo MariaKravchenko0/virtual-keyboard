@@ -111,8 +111,7 @@ export default class Keyboard {
     document.body.append(this.keyboard);
 
     this.comment = document.createElement('p');
-    this.comment.innerHTML =
-      'Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language';
+    this.comment.innerHTML = 'Keyboard created in Windows OS <br> Use <b>ctrl</b> + <b>alt</b> to change language';
     document.body.append(this.comment);
 
     return this;
@@ -147,19 +146,20 @@ export default class Keyboard {
     if (event.type === 'mousedown' || event.type === 'mouseup') {
       event.preventDefault();
 
-      let keyBtn = event.target.closest('.keyboard__key');
+      const keyBtn = event.target.closest('.keyboard__key');
       if (!keyBtn) return;
 
-      const code = keyBtn.dataset.code;
+      const { code } = keyBtn.dataset;
       keyObject = this.generatedKeysArray.find((key) => key.code === code);
 
       window.addEventListener('mousemove', () => {
-        if (keyObject.key.dataset.code !== 'CapsLock')
+        if (keyObject.key.dataset.code !== 'CapsLock') {
           keyObject.key.classList.remove('active');
+        }
       });
     } else {
       keyObject = this.generatedKeysArray.find(
-        (key) => key.code === event.code
+        (key) => key.code === event.code,
       );
       if (!keyObject) return;
     }
@@ -174,8 +174,8 @@ export default class Keyboard {
       keyObject.key.classList.add('active');
 
       if (
-        keyObject.key.dataset.code === 'ShiftLeft' ||
-        keyObject.key.dataset.code === 'ShiftRight'
+        keyObject.key.dataset.code === 'ShiftLeft'
+        || keyObject.key.dataset.code === 'ShiftRight'
       ) {
         if (!this.shiftKey || this.shiftKey === false) {
           this.shiftKey = true;
@@ -201,46 +201,53 @@ export default class Keyboard {
 
       this.printToTextarea(keyObject);
 
-      if (event.code === 'ControlLeft' || event.code === 'ControlRight')
+      if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
         this.ctrlKey = true;
-      if (event.code === 'AltLeft' || event.code === 'AltRight')
+      }
+      if (event.code === 'AltLeft' || event.code === 'AltRight') {
         this.altKey = true;
+      }
 
       if (
-        (event.code === 'ControlLeft' || event.code === 'ControlRight') &&
-        this.altKey === true
-      )
+        (event.code === 'ControlLeft' || event.code === 'ControlRight')
+        && this.altKey === true
+      ) {
         this.switchLanguage();
+      }
       if (
-        (event.code === 'AltLeft' || event.code === 'AltRight') &&
-        this.ctrlKey === true
-      )
+        (event.code === 'AltLeft' || event.code === 'AltRight')
+        && this.ctrlKey === true
+      ) {
         this.switchLanguage();
+      }
     } else if (event.type === 'keyup' || event.type === 'mouseup') {
-      if (keyObject.key.dataset.code !== 'CapsLock')
+      if (keyObject.key.dataset.code !== 'CapsLock') {
         keyObject.key.classList.remove('active');
+      }
 
       if (
-        keyObject.key.dataset.code === 'ShiftLeft' ||
-        keyObject.key.dataset.code === 'ShiftRight'
+        keyObject.key.dataset.code === 'ShiftLeft'
+        || keyObject.key.dataset.code === 'ShiftRight'
       ) {
         this.shiftKey = false;
         this.switchCase(keyObject.key.dataset.code);
 
-        let shiftLeft = this.generatedKeysArray.find(
-          (key) => key.key.dataset.code === 'ShiftLeft'
+        const shiftLeft = this.generatedKeysArray.find(
+          (key) => key.key.dataset.code === 'ShiftLeft',
         );
-        let shiftRight = this.generatedKeysArray.find(
-          (key) => key.key.dataset.code === 'ShiftRight'
+        const shiftRight = this.generatedKeysArray.find(
+          (key) => key.key.dataset.code === 'ShiftRight',
         );
         shiftLeft.key.classList.remove('active');
         shiftRight.key.classList.remove('active');
       }
 
-      if (event.code === 'ControlLeft' || event.code === 'ControlRight')
+      if (event.code === 'ControlLeft' || event.code === 'ControlRight') {
         this.ctrlKey = false;
-      if (event.code === 'AltLeft' || event.code === 'AltRight')
+      }
+      if (event.code === 'AltLeft' || event.code === 'AltRight') {
         this.altKey = false;
+      }
     }
   };
 
@@ -251,9 +258,11 @@ export default class Keyboard {
         key.capitalKey.classList.toggle('hidden');
       });
 
-      this.isShifted === false
-        ? (this.isShifted = true)
-        : (this.isShifted = false);
+      if (this.isShifted === false) {
+        this.isShifted = true;
+      } else {
+        this.isShifted = false;
+      }
     } else if (keyCode === 'CapsLock') {
       if (this.isCaps === false) {
         this.generatedKeysArray.forEach((key) => {
@@ -293,36 +302,40 @@ export default class Keyboard {
     if (keyObj.key.dataset.functional !== 'true') {
       if (this.isShifted === false && this.isCaps === false) {
         this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`;
-        cursorPosition++;
+        cursorPosition += 1;
       } else if (this.isShifted === true && this.isCaps === false) {
         this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`;
-        cursorPosition++;
+        cursorPosition += 1;
       } else if (this.isShifted === false && this.isCaps === true) {
-        keyObj.key.dataset.letter === 'true'
-          ? (this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`)
-          : (this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`);
-        cursorPosition++;
+        if (keyObj.key.dataset.letter === 'true') {
+          this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`;
+        } else {
+          this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`;
+        }
+        cursorPosition += 1;
       } else if (this.isShifted === true && this.isCaps === true) {
-        keyObj.key.dataset.letter === 'true'
-          ? (this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`)
-          : (this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`);
-        cursorPosition++;
+        if (keyObj.key.dataset.letter === 'true') {
+          this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`;
+        } else {
+          this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`;
+        }
+        cursorPosition += 1;
       }
     }
 
     if (keyObj.key.dataset.code === 'Enter') {
       this.textarea.value = `${leftText}\n${rightText}`;
-      cursorPosition++;
+      cursorPosition += 1;
     }
 
     if (keyObj.key.dataset.code === 'Tab') {
       this.textarea.value = `${leftText}\t${rightText}`;
-      cursorPosition++;
+      cursorPosition += 1;
     }
 
     if (keyObj.key.dataset.code === 'Backspace') {
       this.textarea.value = `${leftText.slice(0, -1)}${rightText}`;
-      cursorPosition--;
+      cursorPosition -= 1;
     }
 
     if (keyObj.key.dataset.code === 'Delete') {
@@ -336,10 +349,10 @@ export default class Keyboard {
     }
 
     if (keyObj.key.dataset.code === 'ArrowLeft') {
-      cursorPosition--;
+      cursorPosition -= 1;
     }
     if (keyObj.key.dataset.code === 'ArrowRight') {
-      cursorPosition++;
+      cursorPosition += 1;
     }
     if (keyObj.key.dataset.code === 'ArrowUp') {
       cursorPosition = 0;
@@ -352,26 +365,25 @@ export default class Keyboard {
   };
 
   switchLanguage = () => {
-    let languages = Object.keys(language);
+    const languages = Object.keys(language);
     let currentLanguage = this.keyboard.dataset.language;
 
-    let currentLanguageIndex = languages.indexOf(currentLanguage);
-    let nextLanguageIndex =
-      currentLanguageIndex + 1 < languages.length
-        ? currentLanguageIndex + 1
-        : 0;
+    const currentLanguageIndex = languages.indexOf(currentLanguage);
+    const nextLanguageIndex = currentLanguageIndex + 1 < languages.length
+      ? currentLanguageIndex + 1
+      : 0;
 
     currentLanguage = languages[nextLanguageIndex];
     this.layout = language[currentLanguage];
     this.keyboard.dataset.language = currentLanguage;
 
     this.generatedKeysArray.forEach((element) => {
-      const keyObject = this.layout.find((key) => key.code === element.code);
-
-      element.small = keyObject.small;
-      element.capital = keyObject.capital;
-      element.smallKey.textContent = keyObject.small;
-      element.capitalKey.textContent = keyObject.capital;
+      const newKeyObject = this.layout.find((key) => key.code === element.code);
+      const currentKeyObject = element;
+      currentKeyObject.small = newKeyObject.small;
+      currentKeyObject.capital = newKeyObject.capital;
+      currentKeyObject.smallKey.textContent = newKeyObject.small;
+      currentKeyObject.capitalKey.textContent = newKeyObject.capital;
     });
 
     storage.setStorage('language', currentLanguage);

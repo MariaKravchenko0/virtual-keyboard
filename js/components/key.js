@@ -5,8 +5,8 @@ export default class Key {
     this.code = code;
     this.isFunctional = Boolean(
       code.match(
-        /ControlLeft|ControlRight|AltLeft|AltRight|MetaLeft|Enter|Backspace|Delete|Tab|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|CapsLock|Shift/
-      )
+        /ControlLeft|ControlRight|AltLeft|AltRight|MetaLeft|Enter|Backspace|Delete|Tab|ArrowLeft|ArrowRight|ArrowUp|ArrowDown|CapsLock|Shift/,
+      ),
     );
     this.isLetter = Boolean(small.match(/[a-zа-яёЁ]/));
 
@@ -26,9 +26,12 @@ export default class Key {
       this.key.dataset.functional = 'true';
     } else {
       this.key.dataset.functional = 'false';
-      this.isLetter
-        ? (this.key.dataset.letter = 'true')
-        : (this.key.dataset.letter = 'false');
+
+      if (this.isLetter === true) {
+        this.key.dataset.letter = 'true';
+      } else {
+        this.key.dataset.letter = 'false';
+      }
     }
 
     this.key.dataset.code = this.code;
