@@ -181,18 +181,6 @@ export default class Keyboard {
           this.shiftKey = true;
           this.switchCase(keyObject.key.dataset.code);
         }
-        // } else {
-        //   this.shiftKey = false;
-
-        //   let shiftLeft = this.generatedKeysArray.find(
-        //     (key) => key.key.dataset.code === 'ShiftLeft'
-        //   );
-        //   let shiftRight = this.generatedKeysArray.find(
-        //     (key) => key.key.dataset.code === 'ShiftRight'
-        //   );
-        //   shiftLeft.key.classList.remove('active');
-        //   shiftRight.key.classList.remove('active');
-        // }
       }
 
       if (keyObject.key.dataset.code === 'CapsLock') {
@@ -339,12 +327,6 @@ export default class Keyboard {
     }
 
     if (keyObj.key.dataset.code === 'Delete') {
-      // if (
-      //   !this.textarea.value ||
-      //   this.textarea.selectionStart === this.textarea.value.length
-      // )
-      //   return;
-
       this.textarea.value = `${leftText}${rightText.slice(1)}`;
     }
 
@@ -389,37 +371,3 @@ export default class Keyboard {
     storage.setStorage('language', currentLanguage);
   };
 }
-
-// export function createKeyboard() {
-//   let keyboard = document.createElement("div");
-//   keyboard.classList.add("keyboard");
-
-//   rows.forEach((row, index) => {
-//     let newRow = createRow(row);
-//     newRow.classList.add(`keyboard__row_${index + 1}`);
-//     keyboard.append(newRow);
-//   });
-
-//   return keyboard;
-// }
-
-// function createRow(row) {
-//   let newRow = document.createElement("div");
-//   newRow.classList.add("keyboard__row");
-
-//   row.forEach((code) => {
-//     let keyObj = language.en.find((key) => key.code === code);
-//     let keyEl = createKey(keyObj);
-//     newRow.append(keyEl);
-//   });
-
-//   return newRow;
-// }
-
-// function createKey(keyObj) {
-//   let key = document.createElement("div");
-//   key.classList.add("keyboard__key");
-//   key.textContent = keyObj.small;
-
-//   return key;
-// }
