@@ -3,7 +3,7 @@
 import * as storage from './components/storage.js';
 import Keyboard, { rows } from './components/keyboard.js';
 
-let layout = storage.getStorage('language') || 'ru';
+let layout = storage.getStorage('language') || 'en';
 
 new Keyboard(rows).init(layout).generateLayout();
 

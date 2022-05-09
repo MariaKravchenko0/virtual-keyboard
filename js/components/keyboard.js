@@ -177,7 +177,7 @@ export default class Keyboard {
         } else {
           this.shiftKey = false;
 
-          this.switchCase(keyObject.key.dataset.code);
+          // this.switchCase(keyObject.key.dataset.code);
 
           let shiftLeft = this.generatedKeysArray.find(
             (key) => key.key.dataset.code === 'ShiftLeft'
@@ -221,7 +221,14 @@ export default class Keyboard {
       ) {
         this.shiftKey = false;
         this.switchCase(keyObject.key.dataset.code);
-        keyObject.key.classList.remove('active');
+        let shiftLeft = this.generatedKeysArray.find(
+          (key) => key.key.dataset.code === 'ShiftLeft'
+        );
+        let shiftRight = this.generatedKeysArray.find(
+          (key) => key.key.dataset.code === 'ShiftRight'
+        );
+        shiftLeft.key.classList.remove('active');
+        shiftRight.key.classList.remove('active');
       }
 
       if (event.code === 'ControlLeft' || event.code === 'ControlRight')
