@@ -133,19 +133,20 @@ export default class Keyboard {
       });
     });
 
-    document.addEventListener('keydown', this.handleEvent);
-    document.addEventListener('keyup', this.handleEvent);
+    window.addEventListener('keydown', this.handleEvent);
+    window.addEventListener('keyup', this.handleEvent);
     this.keyboard.addEventListener('mousedown', this.handleEvent);
     this.keyboard.addEventListener('mouseup', this.handleEvent);
   }
 
   handleEvent = (event) => {
     event.stopPropagation();
-    event.preventDefault();
 
     let keyObject;
 
     if (event.type === 'mousedown' || event.type === 'mouseup') {
+      event.preventDefault();
+
       let keyBtn = event.target.closest('.keyboard__key');
       if (!keyBtn) return;
 
@@ -165,6 +166,11 @@ export default class Keyboard {
     this.textarea.focus();
 
     if (event.type === 'keydown' || event.type === 'mousedown') {
+      const listOfCodes = rows.join(',').split(',');
+      listOfCodes.forEach((code) => {
+        if (code === event.code) event.preventDefault();
+      });
+
       keyObject.key.classList.add('active');
 
       if (
@@ -174,20 +180,19 @@ export default class Keyboard {
         if (!this.shiftKey || this.shiftKey === false) {
           this.shiftKey = true;
           this.switchCase(keyObject.key.dataset.code);
-        } else {
-          this.shiftKey = false;
-
-          // this.switchCase(keyObject.key.dataset.code);
-
-          let shiftLeft = this.generatedKeysArray.find(
-            (key) => key.key.dataset.code === 'ShiftLeft'
-          );
-          let shiftRight = this.generatedKeysArray.find(
-            (key) => key.key.dataset.code === 'ShiftRight'
-          );
-          shiftLeft.key.classList.remove('active');
-          shiftRight.key.classList.remove('active');
         }
+        // } else {
+        //   this.shiftKey = false;
+
+        //   let shiftLeft = this.generatedKeysArray.find(
+        //     (key) => key.key.dataset.code === 'ShiftLeft'
+        //   );
+        //   let shiftRight = this.generatedKeysArray.find(
+        //     (key) => key.key.dataset.code === 'ShiftRight'
+        //   );
+        //   shiftLeft.key.classList.remove('active');
+        //   shiftRight.key.classList.remove('active');
+        // }
       }
 
       if (keyObject.key.dataset.code === 'CapsLock') {
@@ -221,6 +226,7 @@ export default class Keyboard {
       ) {
         this.shiftKey = false;
         this.switchCase(keyObject.key.dataset.code);
+
         let shiftLeft = this.generatedKeysArray.find(
           (key) => key.key.dataset.code === 'ShiftLeft'
         );
@@ -254,7 +260,9 @@ export default class Keyboard {
           if (key.key.dataset.letter === 'true') {
             key.smallKey.classList.toggle('hidden');
             key.capitalKey.classList.toggle('hidden');
-          } else if (key.key.dataset.code === 'CapsLock') {
+          }
+
+          if (key.key.dataset.code === 'CapsLock') {
             key.key.classList.add('active');
           }
         });
@@ -265,7 +273,9 @@ export default class Keyboard {
           if (key.key.dataset.letter === 'true') {
             key.smallKey.classList.toggle('hidden');
             key.capitalKey.classList.toggle('hidden');
-          } else if (key.key.dataset.code === 'CapsLock') {
+          }
+
+          if (key.key.dataset.code === 'CapsLock') {
             key.key.classList.remove('active');
           }
         });
@@ -276,25 +286,69 @@ export default class Keyboard {
   };
 
   printToTextarea = (keyObj) => {
+    let cursorPosition = this.textarea.selectionStart;
+    const leftText = this.textarea.value.slice(0, cursorPosition);
+    const rightText = this.textarea.value.slice(cursorPosition);
+
     if (keyObj.key.dataset.functional !== 'true') {
       if (this.isShifted === false && this.isCaps === false) {
-        this.textarea.value += keyObj.smallKey.textContent;
+        this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`;
+        cursorPosition++;
       } else if (this.isShifted === true && this.isCaps === false) {
-        this.textarea.value += keyObj.capitalKey.textContent;
+        this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`;
+        cursorPosition++;
       } else if (this.isShifted === false && this.isCaps === true) {
         keyObj.key.dataset.letter === 'true'
-          ? (this.textarea.value += keyObj.capitalKey.textContent)
-          : (this.textarea.value += keyObj.smallKey.textContent);
+          ? (this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`)
+          : (this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`);
+        cursorPosition++;
       } else if (this.isShifted === true && this.isCaps === true) {
         keyObj.key.dataset.letter === 'true'
-          ? (this.textarea.value += keyObj.smallKey.textContent)
-          : (this.textarea.value += keyObj.capitalKey.textContent);
+          ? (this.textarea.value = `${leftText}${keyObj.smallKey.textContent}${rightText}`)
+          : (this.textarea.value = `${leftText}${keyObj.capitalKey.textContent}${rightText}`);
+        cursorPosition++;
       }
-    } else if (keyObj.key.dataset.code === 'Enter') {
-      this.textarea.value += '\n';
-    } else if (keyObj.key.dataset.code === 'Tab') {
-      this.textarea.value += '\t';
     }
+
+    if (keyObj.key.dataset.code === 'Enter') {
+      this.textarea.value = `${leftText}\n${rightText}`;
+      cursorPosition++;
+    }
+
+    if (keyObj.key.dataset.code === 'Tab') {
+      this.textarea.value = `${leftText}\t${rightText}`;
+      cursorPosition++;
+    }
+
+    if (keyObj.key.dataset.code === 'Backspace') {
+      this.textarea.value = `${leftText.slice(0, -1)}${rightText}`;
+      cursorPosition--;
+    }
+
+    if (keyObj.key.dataset.code === 'Delete') {
+      // if (
+      //   !this.textarea.value ||
+      //   this.textarea.selectionStart === this.textarea.value.length
+      // )
+      //   return;
+
+      this.textarea.value = `${leftText}${rightText.slice(1)}`;
+    }
+
+    if (keyObj.key.dataset.code === 'ArrowLeft') {
+      cursorPosition--;
+    }
+    if (keyObj.key.dataset.code === 'ArrowRight') {
+      cursorPosition++;
+    }
+    if (keyObj.key.dataset.code === 'ArrowUp') {
+      cursorPosition = 0;
+    }
+    if (keyObj.key.dataset.code === 'ArrowDown') {
+      cursorPosition = this.textarea.value.length;
+    }
+
+    this.textarea.setSelectionRange(cursorPosition, cursorPosition);
   };
 
   switchLanguage = () => {
